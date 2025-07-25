@@ -63,6 +63,11 @@ open class InjectionNext: SimpleSocket {
         // Let server side know the platform and architecture
         writeCommand(InjectionResponse.platform.rawValue, with: platform)
         super.write(arch)
+        
+        // Send Bazel workspace directory if available
+        let workspaceDir = ProcessInfo.processInfo.environment["BUILD_WORKSPACE_DIRECTORY"] ?? ""
+        super.write(workspaceDir)
+        
         writeCommand(InjectionResponse.tmpPath.rawValue, with: NSTemporaryDirectory())
 
         log("\(platform) connection to app established, waiting for commands.")

@@ -161,10 +161,18 @@ class InjectionServer: SimpleSocket {
             }
             switch response {
             case .platform:
-                if let platform = readString(), let arch = readString() {
+                if let platform = readString(), let arch = readString(), let workspaceDir = readString() {
                     log("Platform connected: "+platform)
                     self.platform = platform
                     self.arch = arch
+                    
+                    // Auto-watch Bazel workspace directory if provided
+                    if !workspaceDir.isEmpty {
+                        log("Auto-watching Bazel workspace: \(workspaceDir)")
+                        DispatchQueue.main.async {
+                            AppDelegate.ui.watch(path: workspaceDir)
+                        }
+                    }
                 } else {
                     error("**** Bad platform ****")
                     return
